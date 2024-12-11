@@ -1,41 +1,45 @@
 import { useState, useEffect } from "react";
-import { Form, Button } from 'react-bootstrap'
+import { Form, Button } from 'react-bootstrap';
 import React from "react";
 
-function UserForm({submitFunction, prefillData, buttonMessage}) {
+function UserForm({ submitFunction, prefillData, buttonMessage }) {
     const [userInfo, setUserInfo] = useState({
-        'username': '',
-        'password': ''
+        username: '',
+        password: ''
     });
     const [errors, setErrors] = useState({});
 
+    // Prefill the form with data if provided
     useEffect(() => {
-        if(prefillData) setUserInfo(prefillData);
-    }, [])
+        if (prefillData) setUserInfo(prefillData);
+    }, [prefillData]);
 
+    // Validate the form fields
     const validateForm = () => {
         const errors = {};
-        if(!userInfo.username) errors.username = 'Username is required';
-        if(!userInfo.password) errors.password = 'Password is required';
+        if (!userInfo.username) errors.username = 'Username is required';
+        if (!userInfo.password) errors.password = 'Password is required';
         setErrors(errors);
         return Object.keys(errors).length === 0;
-    }
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setUserInfo(prevProduct => ({
-            ...prevProduct,
-            [name]: value
-        }))
     };
 
+    // Handle input change for both fields
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setUserInfo(prevUserInfo => ({
+            ...prevUserInfo,
+            [name]: value
+        }));
+    };
+
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
         submitFunction(userInfo);
     };
 
-    return ( 
+    return (
         <Form onSubmit={handleSubmit}>
             <Form.Group controlId="usernameInput">
                 <Form.Label>Username</Form.Label>
@@ -67,7 +71,7 @@ function UserForm({submitFunction, prefillData, buttonMessage}) {
             </Form.Group>
             <Button variant="primary" type="submit" className="w-100">{buttonMessage}</Button>
         </Form>
-     );
+    );
 }
 
 export default UserForm;

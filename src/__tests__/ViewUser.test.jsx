@@ -1,28 +1,32 @@
 import React from "react";
-import { render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fetchUser } from "../hooks/queries";
-import { StateProvider } from '../StateProvider';
-import ViewUser from '../components/ViewUser';
+import { render, screen, waitFor } from '@testing-library/react'; // Import necessary testing functions
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // Import React Query context provider
+import { fetchUser } from "../hooks/queries"; // Import the fetchUser function to mock it
+import { StateProvider } from '../StateProvider'; // Import the StateProvider to manage global state
+import ViewUser from '../components/ViewUser'; // Import the component to be tested
 
+// Mock the fetchUser function to return fake user data during the test
 jest.mock('../hooks/queries', () => ({
   fetchUser: jest.fn(),
 }));
 
+// Mock useNavigate from react-router-dom, as it's used inside ViewUser component
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
 }));
 
+// Create a new instance of QueryClient to pass to QueryClientProvider in the test
 const queryClient = new QueryClient();
 
 describe('View User Integration Test', () => {
+  // Reset mocks after each test to ensure clean state for the next test
   afterEach(() => {
-    jest.resetAllMocks(); // Reset mocks after each test
+    jest.resetAllMocks(); 
   });
 
   it('fetches the user and displays their data', async () => {
-    // Mock the fetchUser function to return fake user data
+    // Mock the fetchUser function to resolve with fake user data when called
     fetchUser.mockResolvedValue({
       email: 'John@gmail.com',
       username: 'johnd',
@@ -44,16 +48,17 @@ describe('View User Integration Test', () => {
       phone: '1-570-236-7033',
     });
 
-    // Mock the state context to return a valid user object
+    // Mock the user state context to simulate a logged-in user
     const mockUser = {
       userId: 1,
       username: 'johnd',
       isLoggedIn: true,
     };
 
-    // Mock useContext to return the mockUser object
+    // Mock the useContext hook to return the mockUser object when used
     jest.spyOn(React, 'useContext').mockReturnValue(mockUser);
 
+    // Render the ViewUser component wrapped in necessary providers
     render(
       <QueryClientProvider client={queryClient}>
         <StateProvider>
@@ -62,13 +67,13 @@ describe('View User Integration Test', () => {
       </QueryClientProvider>
     );
 
-    // First check for the loading state to confirm that the data is being fetched
+    // Assert that the "loading..." text appears while the user data is being fetched
     expect(screen.getByText(/loading.../i)).toBeInTheDocument();
 
     // Wait for the component to finish rendering the user data
-    await waitFor(() => screen.getByText(/johnd/i)); // Wait until the username appears
+    await waitFor(() => screen.getByText(/johnd/i)); // Wait for the username to appear in the document
 
-    // Assert that the username is in the document once it's rendered
+    // Assert that the username is displayed in the document once it has been fetched
     const usernameElement = screen.getByText(/johnd/i);
     expect(usernameElement).toBeInTheDocument();
   });
