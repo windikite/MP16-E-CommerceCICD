@@ -1,4 +1,4 @@
-My 11th mini-project! This was a tough one, but it brought together a lot of different tools I have at my disposal by now. 
+My 16th mini-project! The final one, and one that takes my most recent E-Commerce website, tests it through the CICD pipeline, and publishes it on Vercel.
 
 USER CRUD  
 You are able to sign up, log in, update your account, or delete your account. I have purposefully reduced the number of fields that are required when signing up and updating, but those fields are presented with the dummy data when viewing your account. Additionally, this application takes advantage of session storage for user data for signing in, managing the cart, and logging out. Due to the quirks of using a placeholder api, I have omitted storing any session data or truly logging in when signing up, as getting a valid response with which to sign in the user is impossible. This is because the api will never change its data.   
